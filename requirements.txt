@@ -6,3 +6,5 @@ py~=1.10.0
 setuptools~=57.4.0
 fastapi~=0.78.0
 pydantic~=1.9.1
+psycopg~=3.0.15
+loguru~=0.6.0

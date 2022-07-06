@@ -1,7 +1,14 @@
-from typing import Optional
-from fastapi import FastAPI, Response, status, HTTPException
-from pydantic import BaseModel
+# docker run --name postgresql -e POSTGRES_USER=test_user -e POSTGRES_PASSWORD=test_password -p 5432:5432 -d postgres
+# uvicorn app.main:app --reload
 from random import randint
+from typing import Optional
+
+import psycopg
+from fastapi import FastAPI, Response, status, HTTPException
+from loguru import logger
+from pydantic import BaseModel
+
+from app.helpers import utils
 
 app = FastAPI()
 
@@ -12,6 +19,13 @@ class Post(BaseModel):
     published: bool = True
     rating: Optional[int] = None
 
+
+def db_connection():
+    return psycopg.connect(host='localhost', dbname='fastapi_course', user='test_user', password='test_password').cursor()
+
+
+cursor = utils.wait(db_connection, timeout=2, interval=1, err_msg="Failed to connect to DB", ignored_exceptions=psycopg.errors.Error)
+logger.info("Database connection was successful!")
 
 my_posts = [
     {"title": "title of post 1", "content": "123", "id": 1},
@@ -37,7 +51,7 @@ def find_post_id(post_id: int):
 
 
 @app.get("/posts/{post_id}")
-def get_post(post_id: int,  response: Response):
+def get_post(post_id: int, response: Response):
     data = find_post(post_id)
 
     if data is None:
