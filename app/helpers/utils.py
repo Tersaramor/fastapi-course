@@ -1,5 +1,5 @@
 import time
-from typing import Callable, Union, List, Type, Any
+from typing import Any, Callable, List, Type, Union
 
 from loguru import logger
 
@@ -36,4 +36,5 @@ def wait(
         except ignored_exceptions as e:
             last_exception = e
 
-    raise TimeoutException(f'Method {method.__name__} timeout out in {timeout}sec with exception: {last_exception}\nerr_msg: {err_msg}')
+    raise TimeoutException(f'Method {method.__name__} timeout out in {timeout}sec with exception: '
+                           f'{last_exception}\nerr_msg: {err_msg}')

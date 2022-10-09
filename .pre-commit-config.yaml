@@ -1,0 +1,16 @@
+# pre-commit install
+# pre-commit run --all-files
+default_language_version:
+    python: python3.10
+default_stages: [commit, push]
+
+repos:
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.48
+    hooks:
+      - id: lint
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        name: isort (python)

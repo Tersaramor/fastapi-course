@@ -1,11 +1,12 @@
-# docker run --name postgresql -e POSTGRES_USER=test_user -e POSTGRES_PASSWORD=test_password -p 5432:5432 -d postgres
+# docker run --name postgresql -e POSTGRES_USER=test_user -e POSTGRES_PASSWORD=test_password -p 15432:5432 -d postgres
 # uvicorn app.main:app --reload
 from random import randint
-from typing import Optional
 
-import psycopg
-from fastapi import FastAPI, Response, status, HTTPException
+from fastapi import FastAPI, HTTPException, Response, status
 from loguru import logger
+from psycopg2 import connect
+from psycopg2.errors import Error
+from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
 
 from app.helpers import utils
@@ -17,14 +18,19 @@ class Post(BaseModel):
     title: str
     content: str
     published: bool = True
-    rating: Optional[int] = None
+    rating: int | None = None
 
 
 def db_connection():
-    return psycopg.connect(host='localhost', dbname='fastapi_course', user='test_user', password='test_password').cursor()
+    return connect(
+        host='localhost', port=15432, dbname='fastapi_course', user='test_user', password='test_password',
+        cursor_factory=RealDictCursor
+    ).cursor()
 
 
-cursor = utils.wait(db_connection, timeout=2, interval=1, err_msg="Failed to connect to DB", ignored_exceptions=psycopg.errors.Error)
+cursor = utils.wait(
+    db_connection, timeout=2, interval=1, err_msg="Failed to connect to DB", ignored_exceptions=Error
+)
 logger.info("Database connection was successful!")
 
 my_posts = [

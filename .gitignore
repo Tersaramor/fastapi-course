@@ -131,4 +131,5 @@ dmypy.json
 # Pycharm
 .idea
 
-# Nginx Access
+# Ruff Access
+.ruff_cache
